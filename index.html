@@ -136,6 +136,35 @@ html,body{width:100%;height:100%;min-width:0}
 #drawer .authorization-items-grid:has(#scopeChoices input[value="员工"]:checked)>.form-section:has(#inflightChoices){grid-column:2;grid-row:2}
 #drawer .authorization-items-grid:has(#processMode input[value="部分"]:checked)>.form-section:has(#inflightChoices){grid-column:1;grid-row:3}
 @media(max-width:760px){#drawer .authorization-items-grid>.form-section:has(#scopeChoices),#drawer .authorization-items-grid>.form-section:has(#processMode),#drawer .authorization-items-grid>#selectedEmployeeBox,#drawer .authorization-items-grid>#selectedProcessBox,#drawer .authorization-items-grid:has(#scopeChoices input[value="员工"]:checked)>.form-section:has(#inflightChoices),#drawer .authorization-items-grid:has(#processMode input[value="部分"]:checked)>.form-section:has(#inflightChoices){grid-column:1;grid-row:auto}#drawer .authorization-items-grid>.form-section:has(#scopeChoices){order:1}#drawer .authorization-items-grid>#selectedEmployeeBox,#drawer .authorization-items-grid>.authorization-department-field{order:2}#drawer .authorization-items-grid>.form-section:has(#processMode){order:3}#drawer .authorization-items-grid>#selectedProcessBox{order:4}#drawer .authorization-items-grid>.form-section:has(#inflightChoices){order:5}}
+/* Authorization fields share label, control, and dependent-row dimensions. */
+#drawer .authorization-items-grid,.authorization-detail-items-grid{align-items:stretch}
+#drawer .authorization-items-grid>.form-section{display:flex;flex-direction:column;align-self:stretch}
+#drawer .authorization-items-grid>.form-section>h3,.authorization-detail-items-grid .authorization-item-label{min-height:18px;line-height:18px;margin:0 0 8px;flex:none}
+#drawer #scopeChoices,#drawer #processMode,#drawer #inflightChoices,.authorization-detail-items-grid .authorization-detail-options{display:flex;align-items:center;min-height:32px;margin:0;gap:20px}
+#drawer #scopeChoices>label,#drawer #processMode>label,#drawer #inflightChoices>label{display:inline-flex;align-items:center;min-height:24px;height:auto;line-height:20px;margin:0;padding:0;border:0;background:transparent;gap:6px}
+#drawer #processMode strong,#drawer #inflightChoices strong{line-height:20px}
+#drawer #inflightChoices{flex:1}
+#drawer #selectedEmployeeBox,#drawer #selectedProcessBox{padding:0;border:0;border-radius:0;background:transparent;align-self:stretch}
+.authorization-dependent-content{display:flex;flex-direction:column;gap:8px;height:100%;min-width:0}
+#drawer .authorization-dependent-content>label,#drawer .authorization-department-field>.department-field>label,.authorization-detail-items-grid .authorization-detail-field>label{display:block;min-height:18px;line-height:18px;margin:0;font-size:12px;color:#374151;font-weight:400;flex:none}
+#drawer .authorization-department-field>.department-field{display:flex;flex-direction:column;gap:8px;height:100%;margin:0}
+.authorization-selection-control{display:flex;align-items:center;gap:8px;flex:1;min-width:0;min-height:32px;padding:4px 9px;border:1px solid #d9dfe8;border-radius:4px;background:#fff}
+#drawer .authorization-selection-control>.hint{min-width:0;flex:1;margin:0;line-height:22px;overflow-wrap:anywhere;color:#6b7280}
+#drawer .authorization-selection-control>.textbtn{flex:none;height:24px;padding:0 4px;white-space:nowrap;font-size:12px}
+#drawer .authorization-department-field #departmentTreeTrigger{flex:1;min-height:32px;margin:0}
+.authorization-detail-items-grid>.authorization-detail-item{display:flex;flex-direction:column;align-self:stretch}
+.authorization-detail-items-grid>.authorization-detail-scope{grid-column:1;grid-row:1}
+.authorization-detail-items-grid>.authorization-detail-process{grid-column:2;grid-row:1}
+.authorization-detail-items-grid>.authorization-detail-dependent-left{grid-column:1;grid-row:2}
+.authorization-detail-items-grid>.authorization-detail-dependent-right{grid-column:2;grid-row:2}
+.authorization-detail-items-grid .authorization-detail-field{display:flex;flex-direction:column;gap:8px;height:100%}
+.authorization-detail-items-grid .authorization-readonly-value{flex:1;min-height:32px;padding:4px 9px;line-height:22px;overflow-wrap:anywhere}
+.authorization-detail-items-grid>.authorization-detail-item:has(.authorization-detail-inflight){grid-column:1;grid-row:2}
+.authorization-detail-items-grid.has-dependent-left>.authorization-detail-item:has(.authorization-detail-inflight){grid-column:2;grid-row:2}
+.authorization-detail-items-grid.has-dependent-right>.authorization-detail-item:has(.authorization-detail-inflight){grid-column:1;grid-row:3}
+.authorization-detail-items-grid .authorization-detail-inflight{display:flex;flex:1}
+.authorization-detail-items-grid .authorization-detail-inflight>.authorization-detail-options{flex:1}
+@media(max-width:760px){.authorization-detail-items-grid>.authorization-detail-scope,.authorization-detail-items-grid>.authorization-detail-process,.authorization-detail-items-grid>.authorization-detail-dependent-left,.authorization-detail-items-grid>.authorization-detail-dependent-right,.authorization-detail-items-grid>.authorization-detail-item:has(.authorization-detail-inflight),.authorization-detail-items-grid.has-dependent-left>.authorization-detail-item:has(.authorization-detail-inflight),.authorization-detail-items-grid.has-dependent-right>.authorization-detail-item:has(.authorization-detail-inflight){grid-column:1;grid-row:auto}.authorization-detail-items-grid>.authorization-detail-scope{order:1}.authorization-detail-items-grid>.authorization-detail-dependent-left{order:2}.authorization-detail-items-grid>.authorization-detail-process{order:3}.authorization-detail-items-grid>.authorization-detail-dependent-right{order:4}.authorization-detail-items-grid>.authorization-detail-item:has(.authorization-detail-inflight){order:5}}
 </style>
 </head>
 <body>
@@ -444,6 +473,22 @@ html,body{width:100%;height:100%;min-width:0}
   $$('#scopeChoices .radio-button').forEach(button=>button.onclick=event=>{event.preventDefault();const input=button.querySelector('input'),wasSelected=button.classList.contains('selected');$$('#scopeChoices input').forEach(radio=>radio.checked=false);$$('#scopeChoices .radio-button').forEach(label=>label.classList.remove('selected'));if(!wasSelected){input.checked=true;button.classList.add('selected');}$('#scopebox').style.display='none';deptPopover.hidden=true;closeEmployeePicker();$('#scopeRequiredError').classList.toggle('show',wasSelected);if(!wasSelected&&input.value==='部门'){updateDepartmentSummary();renderDepartmentTrigger();}else if(!wasSelected&&input.value==='员工'){$('#scopeValue').value=selectedEmployees.join('、');$('#selectedEmployeeText').textContent=selectedEmployees.length?selectedEmployees.map(formatAuthorizationEmployee).join(','):'尚未选择员工';}else $('#scopeValue').value='';clearAuthorizationErrors();$('#scopeRequiredError').classList.toggle('show',wasSelected);syncAuthorizationScopeLayout();});
   authorizationScopeGrid.insertBefore($('#selectedEmployeeBox'),departmentFieldHost);
   authorizationScopeGrid.insertBefore($('#selectedProcessBox'),$('#inflightChoices').closest('.form-section'));
+  [['selectedEmployeeBox','selectedEmployeeText','openEmployeePicker'],['selectedProcessBox','selectedProcessText','openPicker']].forEach(([boxId,textId,buttonId])=>{
+    const box=$('#'+boxId),content=document.createElement('div'),control=document.createElement('div');
+    content.className='authorization-dependent-content';control.className='authorization-selection-control';
+    content.append(box.querySelector(':scope>label'),control);control.append($('#'+textId),$('#'+buttonId));box.append(content);
+  });
+  const openUnalignedAuthorizationDetail=openAuthorizationDetail;
+  openAuthorizationDetail=row=>{
+    openUnalignedAuthorizationDetail(row);
+    const grid=$('#authorizationDetailBody .authorization-detail-items-grid'),items=[...grid.children],scope=items[0],process=items[1],inflight=grid.querySelector('.authorization-detail-inflight').parentElement;
+    scope.classList.add('authorization-detail-scope');process.classList.add('authorization-detail-process');
+    const employeeField=scope.querySelector('.scopebox'),processField=process.querySelector('.scopebox'),departmentField=grid.querySelector('.authorization-detail-department');
+    if(employeeField){employeeField.className='authorization-detail-item authorization-detail-dependent-left';grid.insertBefore(employeeField,inflight);}
+    if(departmentField)departmentField.classList.add('authorization-detail-dependent-left');
+    if(processField){processField.className='authorization-detail-item authorization-detail-dependent-right';grid.insertBefore(processField,inflight);}
+    grid.classList.toggle('has-dependent-left',Boolean(employeeField||departmentField));grid.classList.toggle('has-dependent-right',Boolean(processField));
+  };
   clearCompleteAuthorizationForm();
 </script>
 </body></html>

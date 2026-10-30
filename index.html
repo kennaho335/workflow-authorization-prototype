@@ -128,6 +128,14 @@ html,body{width:100%;height:100%;min-width:0}
 .authorization-detail-items-grid .authorization-detail-item:has(.authorization-detail-inflight){grid-column:1;grid-row:2}
 .authorization-detail-items-grid:has(.authorization-detail-department) .authorization-detail-item:has(.authorization-detail-inflight){grid-column:2}
 @media(max-width:760px){#drawer .authorization-department-field,#drawer .authorization-items-grid>.form-section:has(#inflightChoices),#drawer .authorization-items-grid.has-department>.form-section:has(#inflightChoices),.authorization-detail-items-grid .authorization-detail-department,.authorization-detail-items-grid .authorization-detail-item:has(.authorization-detail-inflight),.authorization-detail-items-grid:has(.authorization-detail-department) .authorization-detail-item:has(.authorization-detail-inflight){grid-column:1;grid-row:auto}}
+/* Dependent selections occupy their own row; inflight follows the visible selections. */
+#drawer .authorization-items-grid>.form-section:has(#scopeChoices){grid-column:1;grid-row:1}
+#drawer .authorization-items-grid>.form-section:has(#processMode){grid-column:2;grid-row:1}
+#drawer .authorization-items-grid>#selectedEmployeeBox{grid-column:1;grid-row:2;margin-top:0;min-width:0}
+#drawer .authorization-items-grid>#selectedProcessBox{grid-column:2;grid-row:2;margin-top:0;min-width:0}
+#drawer .authorization-items-grid:has(#scopeChoices input[value="员工"]:checked)>.form-section:has(#inflightChoices){grid-column:2;grid-row:2}
+#drawer .authorization-items-grid:has(#processMode input[value="部分"]:checked)>.form-section:has(#inflightChoices){grid-column:1;grid-row:3}
+@media(max-width:760px){#drawer .authorization-items-grid>.form-section:has(#scopeChoices),#drawer .authorization-items-grid>.form-section:has(#processMode),#drawer .authorization-items-grid>#selectedEmployeeBox,#drawer .authorization-items-grid>#selectedProcessBox,#drawer .authorization-items-grid:has(#scopeChoices input[value="员工"]:checked)>.form-section:has(#inflightChoices),#drawer .authorization-items-grid:has(#processMode input[value="部分"]:checked)>.form-section:has(#inflightChoices){grid-column:1;grid-row:auto}#drawer .authorization-items-grid>.form-section:has(#scopeChoices){order:1}#drawer .authorization-items-grid>#selectedEmployeeBox,#drawer .authorization-items-grid>.authorization-department-field{order:2}#drawer .authorization-items-grid>.form-section:has(#processMode){order:3}#drawer .authorization-items-grid>#selectedProcessBox{order:4}#drawer .authorization-items-grid>.form-section:has(#inflightChoices){order:5}}
 </style>
 </head>
 <body>
@@ -434,6 +442,8 @@ html,body{width:100%;height:100%;min-width:0}
   authorizationScopeGrid.insertBefore(departmentFieldHost,$('#inflightChoices').closest('.form-section'));
   function syncAuthorizationScopeLayout(){const scope=$('input[name="scope"]:checked')?.value,department=scope==='部门';$('#selectedDepartmentBox').style.display=department?'block':'none';$('#selectedEmployeeBox').style.display=scope==='员工'?'block':'none';$('#departmentTreeTrigger').setAttribute('aria-required',String(department));authorizationItemsModule.querySelector('.authorization-items-grid').classList.toggle('has-department',department);}
   $$('#scopeChoices .radio-button').forEach(button=>button.onclick=event=>{event.preventDefault();const input=button.querySelector('input'),wasSelected=button.classList.contains('selected');$$('#scopeChoices input').forEach(radio=>radio.checked=false);$$('#scopeChoices .radio-button').forEach(label=>label.classList.remove('selected'));if(!wasSelected){input.checked=true;button.classList.add('selected');}$('#scopebox').style.display='none';deptPopover.hidden=true;closeEmployeePicker();$('#scopeRequiredError').classList.toggle('show',wasSelected);if(!wasSelected&&input.value==='部门'){updateDepartmentSummary();renderDepartmentTrigger();}else if(!wasSelected&&input.value==='员工'){$('#scopeValue').value=selectedEmployees.join('、');$('#selectedEmployeeText').textContent=selectedEmployees.length?selectedEmployees.map(formatAuthorizationEmployee).join(','):'尚未选择员工';}else $('#scopeValue').value='';clearAuthorizationErrors();$('#scopeRequiredError').classList.toggle('show',wasSelected);syncAuthorizationScopeLayout();});
+  authorizationScopeGrid.insertBefore($('#selectedEmployeeBox'),departmentFieldHost);
+  authorizationScopeGrid.insertBefore($('#selectedProcessBox'),$('#inflightChoices').closest('.form-section'));
   clearCompleteAuthorizationForm();
 </script>
 </body></html>

@@ -619,3 +619,42 @@ html,body{width:100%;height:100%;min-width:0}
   })();
 </script>
 </body></html>
+<style>
+  /* 代理事项中的枚举选项统一纵向排列，保留原有单选、显隐和校验逻辑。 */
+  #drawer .authorization-items-grid #scopeChoices,#drawer .authorization-items-grid #processMode,#drawer .authorization-items-grid #inflightChoices{flex-direction:column;align-items:flex-start;gap:14px}
+  #drawer .authorization-items-grid #scopeChoices .radio-button,#drawer .authorization-items-grid #processMode .compact-choice,#drawer .authorization-items-grid #inflightChoices .compact-choice{flex:none;min-height:20px}
+  /* 三个代理字段分别占据一行；依赖选择紧跟在已选项下方，不重复展示字段标题。 */
+  #drawer .authorization-items-grid{grid-template-columns:minmax(0,1fr);gap:0}
+  #drawer .authorization-items-grid>.form-section:has(#scopeChoices),#drawer .authorization-items-grid>.form-section:has(#processMode),#drawer .authorization-items-grid>.form-section:has(#inflightChoices){grid-column:1 / -1;grid-row:auto!important;margin:0 0 20px;padding:0;border:0;background:transparent}
+  #drawer .authorization-items-grid>.form-section:has(#scopeChoices){grid-row:1!important;order:1}
+  #drawer .authorization-items-grid>.form-section:has(#processMode){grid-row:2!important;order:2}
+  #drawer .authorization-items-grid>.form-section:has(#inflightChoices){grid-column:1 / -1!important;grid-row:3!important;order:3}
+  #drawer .authorization-items-grid #scopeChoices .radio-button,#drawer .authorization-items-grid #processMode .compact-choice{align-self:flex-start}
+  #drawer .authorization-items-grid #scopeChoices,#drawer .authorization-items-grid #processMode{height:auto!important;min-height:0!important;align-items:stretch}
+  #drawer #scopeDependentHost,#drawer #processDependentHost{width:100%;min-height:0;margin-top:10px}
+  #drawer #scopeDependentHost>#selectedDepartmentBox,#drawer #scopeDependentHost>#selectedEmployeeBox,#drawer #processDependentHost>#selectedProcessBox{width:100%;min-height:0!important;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-sizing:border-box}
+  #drawer #scopeDependentHost .department-field>label,#drawer #scopeDependentHost #selectedEmployeeBox .authorization-dependent-content>label,#drawer #processDependentHost #selectedProcessBox .authorization-dependent-content>label{display:none}
+  #drawer #scopeDependentHost .department-field,#drawer #scopeDependentHost #selectedEmployeeBox .authorization-dependent-content,#drawer #processDependentHost #selectedProcessBox .authorization-dependent-content{width:100%;min-height:32px!important;margin:0}
+  #drawer #scopeDependentHost .department-tree-trigger,#drawer #scopeDependentHost #selectedEmployeeBox .authorization-selection-control,#drawer #processDependentHost #selectedProcessBox .authorization-selection-control{width:100%;min-height:32px}
+</style>
+<script>
+(()=>{
+ const scopeChoices=$('#scopeChoices'),processChoices=$('#processMode'),departmentSelection=$('#selectedDepartmentBox'),employeeSelection=$('#selectedEmployeeBox'),processSelection=$('#selectedProcessBox');
+ if(!scopeChoices||!processChoices||!departmentSelection||!employeeSelection||!processSelection)return;
+ const scopeHost=document.createElement('div'),processHost=document.createElement('div'),parking=document.createElement('div');
+ scopeHost.id='scopeDependentHost';processHost.id='processDependentHost';parking.id='authorizationDependentParking';parking.hidden=true;
+ scopeChoices.insertAdjacentElement('afterend',scopeHost);processChoices.insertAdjacentElement('afterend',processHost);scopeChoices.closest('.form-section').after(parking);
+ const syncDependentHosts=()=>{
+  parking.append(departmentSelection,employeeSelection,processSelection);
+  const scope=$('input[name="scope"]:checked')?.value,process=$('input[name="processMode"]:checked')?.value;
+  const scopeOption=scopeChoices.querySelector('input[name="scope"]:checked')?.closest('label'),processOption=processChoices.querySelector('input[name="processMode"]:checked')?.closest('label');
+  if(scope==='部门'&&scopeOption){scopeOption.insertAdjacentElement('afterend',scopeHost);scopeHost.append(departmentSelection);}else if(scope==='员工'&&scopeOption){scopeOption.insertAdjacentElement('afterend',scopeHost);scopeHost.append(employeeSelection);}else scopeChoices.insertAdjacentElement('afterend',scopeHost);
+  if(process==='部分'&&processOption){processOption.insertAdjacentElement('afterend',processHost);processHost.append(processSelection);}else processChoices.insertAdjacentElement('afterend',processHost);
+ };
+ document.addEventListener('click',event=>{if(event.target.closest('#scopeChoices label,#processMode label'))setTimeout(syncDependentHosts,0);});
+ document.addEventListener('change',event=>{if(event.target.matches('input[name="scope"],input[name="processMode"]'))setTimeout(syncDependentHosts,0);});
+ const openDrawerWithDependentHosts=openDrawer;
+ openDrawer=function(row=null){openDrawerWithDependentHosts(row);setTimeout(syncDependentHosts,0);};
+ syncDependentHosts();
+})();
+</script>
